@@ -9,6 +9,7 @@
 
 % --- ADDITIONAL PACKAGES ---
 \usepackage{graphicx}    % Added for Directive A image fallback
+\usepackage{float}       % Required for [H] float placement specifier
 \usepackage{tabularx}    % For flexible width tables
 \usepackage{booktabs}    % For professional table rules
 \usepackage{parskip}     % For better paragraph spacing without indents
@@ -840,9 +841,8 @@ The reporting component shall support saving/exporting reports in multiple forma
 \textbf{Priority:} High.
 
 \subsubsection{Stimulus/Response Sequences}
-\begin{table}[htbp]
-\centering
-\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}X >{\raggedright\arraybackslash}X}
+\begin{table}[H]
+\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}p{3.2cm} >{\raggedright\arraybackslash}X}
 \toprule
 \textbf{Stimulus} & \textbf{Response} \\
 \midrule
@@ -887,9 +887,8 @@ The system shall allow searching documents by file type, creation date, author, 
 \textbf{Priority:} Medium-High.
 
 \subsubsection{Stimulus/Response Sequences}
-\begin{table}[htbp]
-\centering
-\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}X >{\raggedright\arraybackslash}X}
+\begin{table}[H]
+\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}p{3.2cm} >{\raggedright\arraybackslash}X}
 \toprule
 \textbf{Stimulus} & \textbf{Response} \\
 \midrule
@@ -939,9 +938,8 @@ The system shall support integration with Microsoft Outlook for messaging/commun
 \textbf{Priority:} Medium.
 
 \subsubsection{Stimulus/Response Sequences}
-\begin{table}[htbp]
-\centering
-\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}X >{\raggedright\arraybackslash}X}
+\begin{table}[H]
+\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}p{3.2cm} >{\raggedright\arraybackslash}X}
 \toprule
 \textbf{Stimulus} & \textbf{Response} \\
 \midrule
@@ -976,9 +974,8 @@ For frequent error cases, the system shall suggest resolution methods to help us
 \textbf{Priority:} High.
 
 \subsubsection{Stimulus/Response Sequences}
-\begin{table}[htbp]
-\centering
-\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}X >{\raggedright\arraybackslash}X}
+\begin{table}[H]
+\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}p{3.2cm} >{\raggedright\arraybackslash}X}
 \toprule
 \textbf{Stimulus} & \textbf{Response} \\
 \midrule
@@ -1010,9 +1007,8 @@ The system shall provide rollback capability to return to previous data states i
 \textbf{Priority:} High.
 
 \subsubsection{Stimulus/Response Sequences}
-\begin{table}[htbp]
-\centering
-\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}X >{\raggedright\arraybackslash}X}
+\begin{table}[H]
+\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}p{3.2cm} >{\raggedright\arraybackslash}X}
 \toprule
 \textbf{Stimulus} & \textbf{Response} \\
 \midrule
