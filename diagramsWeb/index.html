@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UML Diagrams - AFSMS</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #f8fafc; }
+        .diagram-card {
+            background: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+            border: 1px solid #e2e8f0;
+            padding: 32px;
+            margin-bottom: 40px;
+            display: flex;
+            justify-content: center;
+            overflow-x: auto;
+        }
+        .section-title {
+            display: flex;
+            align-items: center;
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #0f172a;
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid #e2e8f0;
+        }
+        .section-badge {
+            background: #2563eb;
+            color: white;
+            padding: 2px 10px;
+            border-radius: 99px;
+            font-size: 0.875rem;
+            margin-right: 12px;
+        }
+    </style>
+</head>
+<body class="p-8 text-gray-800">
+
+    <div class="max-w-6xl mx-auto">
+        <header class="text-center mb-12">
+            <h1 class="text-4xl font-bold text-slate-900 mb-4">AFSMS System <span class="text-blue-600">Visual Architecture</span></h1>
+            <p class="text-slate-500 text-lg max-w-2xl mx-auto">Refined UML diagrams for inclusion in the technical documentation (SRS). They use standardized notations, color coding, and modern visual elements.</p>
+        </header>
+
+        <!-- Diagram 1: Use Case -->
+        <div>
+            <h2 class="section-title"><span class="section-badge">1</span> System Functions (Use Case Diagram)</h2>
+            <div class="diagram-card">
+                <pre class="mermaid">
+                    flowchart LR
+                        %% Custom Styles
+                        classDef actor fill:#f8fafc,stroke:#475569,stroke-width:2px,color:#0f172a;
+                        classDef external fill:#dbeafe,stroke:#2563eb,stroke-width:2px,color:#1e3a8a;
+                        classDef usecase fill:#ffffff,stroke:#cbd5e1,stroke-width:2px,color:#334155,rx:20px,ry:20px;
+                        classDef boundary fill:#f8fafc,stroke:#94a3b8,stroke-width:2px,stroke-dasharray: 5 5;
+
+                        %% Actors
+                        Visitor(["👤 Visitor"]):::actor
+                        Student(["👤 Student"]):::actor
+                        Professor(["👤 Professor"]):::actor
+                        Registrar(["👤 Registrar"]):::actor
+                        Admin(["👤 Administrator"]):::actor
+
+                        %% External Systems
+                        SSO["«system»<br/>🔐 SSO Security"]:::external
+                        DB["«system»<br/>🗄️ Database (DBMS)"]:::external
+                        Excel["«system»<br/>📊 Microsoft Excel"]:::external
+                        Outlook["«system»<br/>📧 Microsoft Outlook"]:::external
+
+                        %% System Boundary
+                        subgraph AFSMS_System ["AFSMS System (Web Portal)"]
+                            direction TB
+                            UC1(["View public portal"]):::usecase
+                            UC2(["SSO Authentication"]):::usecase
+                            UC3(["Data Collection & Mgt"]):::usecase
+                            UC4(["Generate e-Grade Centralizer"]):::usecase
+                            UC5(["Document Workflow Mgt"]):::usecase
+                            UC6(["Send Group Messages"]):::usecase
+                            UC7(["Audit Logging"]):::usecase
+                            UC8(["Data Recovery / Rollback"]):::usecase
+                            UC9(["Configure Permissions"]):::usecase
+                        end
+                        class AFSMS_System boundary;
+
+                        %% Associations
+                        Visitor --- UC1
+                        Student --- UC2
+                        Professor --- UC2
+                        Registrar --- UC2
+                        Admin --- UC2
+                        UC2 --- SSO
+
+                        Registrar --- UC3
+                        Professor --- UC3
+
+                        Registrar --- UC4
+                        UC4 -.->|"«include»"| Excel
+
+                        Registrar --- UC5
+
+                        Registrar --- UC6
+                        Professor --- UC6
+                        UC6 -.->|"«include»"| Outlook
+
+                        UC7 --- DB
+                        Admin --- UC8
+                        UC8 --- DB
+                        Admin --- UC9
+                </pre>
+            </div>
+        </div>
+
+        <!-- Diagram 2: Sequence SSO -->
+        <div>
+            <h2 class="section-title"><span class="section-badge">2</span> Authentication and Web Portal (Sequence Diagram)</h2>
+            <div class="diagram-card">
+                <pre class="mermaid">
+                    sequenceDiagram
+                        autonumber
+                        actor U as 👤 User
+                        participant WP as 🌐 Web Portal (AFSMS)
+                        participant SSO as 🔐 SSO Subsystem
+                        participant DB as 🗄️ Database
+
+                        U->>WP: Access /login
+                        WP->>SSO: Redirect (Token Request)
+                        SSO-->>U: Display institutional login page
+                        
+                        Note over U,SSO: The user enters their university credentials
+                        U->>SSO: Enter ucv.ro credentials
+                        
+                        SSO-->>WP: Return valid token (SAML/OAuth)
+                        WP->>DB: Query permissions based on ID
+                        DB-->>WP: Return Role (e.g., Registrar)
+                        WP-->>U: Display private interface (Dashboard)
+                </pre>
+            </div>
+        </div>
+
+        <!-- Diagram 3: Activity Reports -->
+        <div>
+            <h2 class="section-title"><span class="section-badge">3</span> e-Grade Centralizer Generation (Activity Diagram)</h2>
+            <div class="diagram-card">
+                <pre class="mermaid">
+                    flowchart TD
+                        %% Logic Styles
+                        classDef startEnd fill:#22c55e,stroke:#15803d,stroke-width:2px,color:#fff;
+                        classDef process fill:#eff6ff,stroke:#3b82f6,stroke-width:2px,color:#1e293b;
+                        classDef decision fill:#fef08a,stroke:#ca8a04,stroke-width:2px,color:#854d0e;
+                        classDef error fill:#fee2e2,stroke:#ef4444,stroke-width:2px,color:#991b1b;
+
+                        Start(((Start))):::startEnd --> A
+                        A[Select filters: Specialization, Year, Form]:::process --> B
+                        B[Click Generate button]:::process --> C
+                        C[System retrieves data from Database]:::process --> D
+                        
+                        D{Data<br/>complete?}:::decision
+                        
+                        D -- "No" --> E[Display error and suggested resolution]:::error
+                        E -.->|Correct data| A
+                        
+                        D -- "Yes" --> F[Sort students alphabetically A-Z]:::process
+                        F --> G[Display report on screen in tabular format]:::process
+                        G --> H[Select export format PDF, XLS, CSV]:::process
+                        H --> I[Generate and download file]:::process
+                        I --> End(((End))):::startEnd
+                </pre>
+            </div>
+        </div>
+
+        <!-- Diagram 4: Activity Documents -->
+        <div>
+            <h2 class="section-title"><span class="section-badge">4</span> Document Workflow Management (Activity Diagram)</h2>
+            <div class="diagram-card">
+                <pre class="mermaid">
+                    flowchart TD
+                        classDef startEnd fill:#22c55e,stroke:#15803d,stroke-width:2px,color:#fff;
+                        classDef process fill:#eff6ff,stroke:#3b82f6,stroke-width:2px,color:#1e293b;
+                        classDef decision fill:#fef08a,stroke:#ca8a04,stroke-width:2px,color:#854d0e;
+                        classDef error fill:#fee2e2,stroke:#ef4444,stroke-width:2px,color:#991b1b;
+
+                        Start(((Start))):::startEnd --> A
+                        A[Enter criteria: Type, Date, Author]:::process --> B
+                        
+                        B{Valid<br/>criteria?}:::decision
+                        B -- "No" --> C[Display validation error message]:::error
+                        C -.-> A
+                        
+                        B -- "Yes" --> D[Query file system / DB]:::process
+                        D --> E{Documents<br/>found?}:::decision
+                        
+                        E -- "No" --> F[Display 'No results' message]:::error
+                        F --> End(((End))):::startEnd
+                        
+                        E -- "Yes" --> G[Display documents table]:::process
+                        G --> H[Action: open/route document]:::process
+                        H --> I[System records move in Audit Log]:::process
+                        I --> End
+                </pre>
+            </div>
+        </div>
+
+        <!-- Diagram 5: Sequence Rollback -->
+        <div>
+            <h2 class="section-title"><span class="section-badge">5</span> Audit Logging and Rollback (Sequence Diagram)</h2>
+            <div class="diagram-card">
+                <pre class="mermaid">
+                    sequenceDiagram
+                        autonumber
+                        actor Admin as 👤 Administrator
+                        participant WP as 🌐 AFSMS Interface
+                        participant DB as 🗄️ Database (DBMS)
+
+                        Admin->>WP: Request Audit Logs view
+                        WP->>DB: Extract activity history
+                        DB-->>WP: Return data (Actor, Time, Action)
+                        WP-->>Admin: Display audit logs table
+
+                        rect rgb(241, 245, 249)
+                        opt Point-in-time Rollback Scenario
+                            Admin->>WP: Initiate Rollback to time T-1
+                            WP->>DB: Command restoration (Backup / Log)
+                            
+                            activate DB
+                            Note right of DB: DBMS cancels recent<br/>critical operations
+                            DB->>DB: Execute Rollback
+                            DB-->>WP: Confirm complete restoration
+                            deactivate DB
+                            
+                            WP->>DB: Save "Rollback executed" action in log
+                            WP-->>Admin: Success message on screen
+                        end
+                        end
+                </pre>
+            </div>
+        </div>
+    </div>
+
+    <!-- Premium Configured Mermaid Script -->
+    <script type="module">
+        import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+        mermaid.initialize({ 
+            startOnLoad: true, 
+            theme: 'base',
+            themeVariables: {
+                primaryColor: '#f1f5f9',
+                primaryTextColor: '#1e293b',
+                primaryBorderColor: '#94a3b8',
+                lineColor: '#64748b',
+                secondaryColor: '#f8fafc',
+                tertiaryColor: '#ffffff',
+                fontFamily: 'Inter, sans-serif',
+                fontSize: '14px',
+                actorBkg: '#f8fafc',
+                actorBorder: '#475569',
+                actorTextColor: '#0f172a',
+                signalColor: '#334155',
+                signalTextColor: '#1e293b'
+            },
+            flowchart: { curve: 'basis', htmlLabels: true },
+            sequence: { 
+                actorMargin: 60,
+                messageMargin: 40,
+                boxMargin: 15,
+                mirrorActors: false
+            }
+        });
+    </script>
+</body>
+</html>

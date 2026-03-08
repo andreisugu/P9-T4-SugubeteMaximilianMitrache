@@ -263,7 +263,7 @@ AFSMS automates student management and administrative workflows through the foll
     \centering
     \framebox{\parbox{0.85\textwidth}{\centering
       \vspace{0cm}
-      \includegraphics[width=0.85\textwidth]{1.png}
+      \includegraphics[width=0.85\textwidth]{1e.png}
       \vspace{0cm}
     }}
     \caption{System Use Case Diagram.}
@@ -732,7 +732,7 @@ The web portal provides SSO-based authentication, user registration with an init
 
 \begin{figure}[htbp]
     \centering
-    \includegraphics[width=0.9\textwidth]{2.png}
+    \includegraphics[width=0.9\textwidth]{2e.png}
     \caption{Web Portal and Access Management - SSO Authentication.}
     \label{fig:img2}
 \end{figure}
@@ -778,7 +778,7 @@ The reporting module allows authorized users to generate academic reports (inclu
 
 \begin{figure}[htbp]
     \centering
-    \includegraphics[width=0.9\textwidth, height=0.9\textheight, keepaspectratio]{3.png}
+    \includegraphics[width=0.9\textwidth, height=0.9\textheight, keepaspectratio]{3e.png}
     \caption{Reporting and Export - e-Grade Centralizer.}
     \label{fig:img3}
 \end{figure}
@@ -828,7 +828,7 @@ The user provides invalid search criteria. & The system rejects the search and d
 
 \begin{figure}[htbp]
     \centering
-    \includegraphics[width=0.9\textwidth]{4.png}
+    \includegraphics[width=0.9\textwidth]{4e.png}
     \caption{Document Workflow and Search - Management Interface.}
     \label{fig:img4}
 \end{figure}
@@ -905,7 +905,7 @@ Offline backup is scheduled or triggered. & The system produces an offline backu
 
 \begin{figure}[htbp]
     \centering
-    \includegraphics[width=0.9\textwidth]{5.png}
+    \includegraphics[width=0.9\textwidth]{5e.png}
     \caption{Audit Logging and Data Recovery - Rollback.}
     \label{fig:img5}
 \end{figure}
@@ -1056,6 +1056,21 @@ Business rules define operational principles (who can do what, under which condi
     \item \textbf{BR-AFSMS-10:} All operations shall be logged with user identity and relevant data details.
     \item \textbf{BR-AFSMS-11:} The system shall support rollback/recovery to previous data states.
     \item \textbf{BR-AFSMS-12:} The database shall support offline backup and point-in-time recovery as part of operational maintenance.
+\end{itemize}
+
+\subsection{Coding Standards and Code Quality Requirements}
+The following coding standards shall be respected during system development to ensure maintainable and high-quality source code.
+\begin{itemize}
+    \item \textbf{CODE-01:} All source code shall follow consistent naming conventions: classes in PascalCase and variables in camelCase.
+    \item \textbf{CODE-02:} Each function shall implement a single responsibility and should not exceed 50 lines of code where possible.
+    \item \textbf{CODE-03:} Code duplication shall be avoided; reusable functionality shall be placed in shared modules.
+    \item \textbf{CODE-04:} All public classes and methods shall include documentation comments describing their purpose and parameters.
+    \item \textbf{CODE-05:} Error handling shall be implemented for all operations interacting with external systems or files.
+    \item \textbf{CODE-06:} Hard-coded values (``magic numbers'') shall be avoided; constants shall be defined in configuration files or constant definitions.
+    \item \textbf{CODE-07:} Source code shall be structured in logical modules corresponding to system components.
+    \item \textbf{CODE-08:} All code shall be reviewed through peer code review before integration into the main branch.
+    \item \textbf{CODE-09:} Static code analysis tools shall be used to detect potential bugs and code smells.
+    \item \textbf{CODE-10:} Unit tests shall be implemented for core business logic components.
 \end{itemize}
 
 
