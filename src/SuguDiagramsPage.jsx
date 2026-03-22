@@ -7,33 +7,65 @@ const suguDiagrams = [
   {
     category: 'Use Case',
     files: [
+      'diagrams/sugu/use-case/use-case_v1.svg',
+      'diagrams/sugu/use-case/use-case_v2.svg',
+      'diagrams/sugu/use-case/use-case_v3.svg',
       'diagrams/sugu/use-case/use-case_v1.png',
       'diagrams/sugu/use-case/use-case_v2_secretariat_workflow.png',
       'diagrams/sugu/use-case/use-case_v3_secretariat_workflow.png',
+    ],
+    display: [
+      'diagrams/sugu/use-case/use-case_v1.svg',
+      'diagrams/sugu/use-case/use-case_v2.svg',
+      'diagrams/sugu/use-case/use-case_v3.svg',
     ],
   },
   {
     category: 'Activity',
     files: [
+      'diagrams/sugu/activity/activity_v1.svg',
+      'diagrams/sugu/activity/activity_v2.svg',
+      'diagrams/sugu/activity/activity_v3.svg',
       'diagrams/sugu/activity/activity_v1.png',
       'diagrams/sugu/activity/activity_v2.png',
       'diagrams/sugu/activity/activity_v3.png',
+    ],
+    display: [
+      'diagrams/sugu/activity/activity_v1.svg',
+      'diagrams/sugu/activity/activity_v2.svg',
+      'diagrams/sugu/activity/activity_v3.svg',
     ],
   },
   {
     category: 'Sequence',
     files: [
+      'diagrams/sugu/sequence/sequence_v1.svg',
+      'diagrams/sugu/sequence/sequence_v2.svg',
+      'diagrams/sugu/sequence/sequence_v3.svg',
       'diagrams/sugu/sequence/sequence_v1.png',
       'diagrams/sugu/sequence/sequence_v2.png',
       'diagrams/sugu/sequence/sequence_v3.png',
+    ],
+    display: [
+      'diagrams/sugu/sequence/sequence_v1.svg',
+      'diagrams/sugu/sequence/sequence_v2.svg',
+      'diagrams/sugu/sequence/sequence_v3.svg',
     ],
   },
   {
     category: 'Role-Based Access Control',
     files: [
+      'diagrams/sugu/role-based-access-control/rbac_v1.svg',
+      'diagrams/sugu/role-based-access-control/rbac_v2.svg',
+      'diagrams/sugu/role-based-access-control/rbac_v3.svg',
       'diagrams/sugu/role-based-access-control/rbac_v1.png',
       'diagrams/sugu/role-based-access-control/rbac_v2.png',
       'diagrams/sugu/role-based-access-control/rbac_v3.png',
+    ],
+    display: [
+      'diagrams/sugu/role-based-access-control/rbac_v1.svg',
+      'diagrams/sugu/role-based-access-control/rbac_v2.svg',
+      'diagrams/sugu/role-based-access-control/rbac_v3.svg',
     ],
   },
 ];
@@ -47,8 +79,9 @@ export default function SuguDiagramsPage() {
         <div key={group.category} className="mb-10">
           <h3 className="text-lg font-semibold text-blue-700 mb-4">{group.category}</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {group.files.map((file, idx) => {
+            {group.display.map((file, idx) => {
               const imgSrc = BASE + file;
+              const isSvg = file.endsWith('.svg');
               return (
                 <div key={file} className="bg-white rounded-lg shadow border border-slate-200 p-4 flex flex-col items-center">
                   <img src={imgSrc} alt={`${group.category} Diagram ${idx + 1}`} className="max-w-full max-h-80 object-contain mb-2" />
