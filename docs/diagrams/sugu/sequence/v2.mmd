@@ -1,0 +1,22 @@
+flowchart TD
+    subgraph Client_Perspective ["User Perspective"]
+        Reg(User registers via Web Interface)
+        Attempt(User attempts restricted action)
+        Success(((User successfully performs restricted action)))
+    end
+
+    subgraph AFSMS_Access_Control ["AFSMS Access Control"]
+        Assign[System assigns predefined initial rights]
+        Block[System blocks action & displays error]
+    end
+
+    subgraph Admin_Operations ["Administrator Operations"]
+        Customize{Admin customizes user access rights}
+    end
+
+    Reg -- "REQ-AFSMS-07" --> Assign
+    Assign -- "REQ-AFSMS-08" --> Attempt
+    Attempt -- "Insufficient Privileges" --> Block
+    Block -- "REQ-AFSMS-15" --> Customize
+    Customize -- "REQ-AFSMS-09\nUpdate RBAC profile" --> Attempt
+    Attempt -- "Sufficient Privileges" --> Success

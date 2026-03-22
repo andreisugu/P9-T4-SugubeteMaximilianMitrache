@@ -1,0 +1,37 @@
+flowchart TD
+    subgraph User [User / Secretariat Staff]
+        A((Start)) --> B[Submit/Forward Document]
+    end
+
+    subgraph WebPortal [Web Portal]
+        B --> C{Validate Input Data?}
+        C -- Invalid --> D[Display Validation Error]
+        D -. Correct Input .-> B
+        C -- Valid --> E[Transmit Request to Server]
+    end
+
+    subgraph AFSMS [AFSMS Server]
+        E --> F[Process Routing Decision]
+        F --> G{Determine Route Type}
+        
+        G -- Inform --> H[Set State: Inform]
+        G -- Approve --> I[Set State: Pending Approval]
+        G -- Modify --> J[Set State: Modification Required]
+        
+        H --> K[Command State Update]
+        I --> K
+        J --> K
+        
+        N[Trigger Audit Logging] --> O[Trigger Outlook API Notification]
+    end
+
+    subgraph DB [Database]
+        K --> L[Update Document Metadata/State]
+        L --> M[Commit Transaction]
+        M --> N
+        
+        P[Save Audit Entry]
+        N -. Async .-> P
+    end
+
+    O --> Q((End))

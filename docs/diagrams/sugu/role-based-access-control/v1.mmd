@@ -1,0 +1,38 @@
+classDiagram
+    direction TB
+    class User {
+        +String UserID
+        +String FullName
+        +String Email
+    }
+    class UserAccount {
+        +String AccountID
+        +String Username
+        +String AuthStatus
+    }
+    class Role {
+        +String RoleID
+        +String RoleName
+    }
+    class Permission {
+        +String PermID
+        +String Action
+        +String Resource
+    }
+    class SessionToken {
+        +String TokenID
+        +DateTime IssueTime
+        +DateTime ExpiryTime
+        +String Scope
+    }
+    class SystemModule {
+        +String ModuleID
+        +String ModuleName
+        +String RequiredAccessLevel
+    }
+
+    User "1" *-- "1" UserAccount : owns
+    UserAccount "1" *-- "0..*" SessionToken : issues
+    UserAccount "*" -- "*" Role : assigned_to
+    Role "*" -- "*" Permission : contains
+    Permission "*" -- "1..*" SystemModule : governs_access_to

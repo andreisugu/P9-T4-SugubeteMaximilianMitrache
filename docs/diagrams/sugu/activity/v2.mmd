@@ -1,0 +1,16 @@
+flowchart TD
+    A((Start)) --> B[Select filters: Specialization, Year, Form]
+    B --> C[Click 'Generate' button]
+    C --> D[System retrieves data from Database]
+    
+    D --> E{Data complete?}
+    
+    E -- No --> F[Display error and suggested resolution]
+    F -. Correct data .-> B
+    
+    E -- Yes --> G[Sort students alphabetically A-Z]
+    G --> H[Display report on screen in tabular format]
+    H --> I[Select export format: PDF, XLS, CSV]
+    I --> J[Generate and download file]
+    
+    J --> K((End))

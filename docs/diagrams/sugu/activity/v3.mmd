@@ -1,0 +1,25 @@
+flowchart TD
+    A((Start)) --> B[Admin requests rollback operation]
+    
+    B --> C{Verify Admin Privileges}
+    C -- Invalid/Denied --> D[Display Access Denied Message]
+    D --> End_Denied((End))
+    
+    C -- Valid --> E[Admin accesses Audit Logs]
+    E --> F[Extract and display activity history]
+    F --> G[Admin selects target state T-1]
+    G --> H[Initiate Rollback to time T-1]
+    
+    H --> I[System commands database restoration]
+    I --> J[DBMS cancels recent critical operations]
+    
+    J --> K[Execute Rollback process]
+    K --> L{Restoration Successful?}
+    
+    L -- No --> M[Abort Rollback & Alert Admin]
+    M --> N((End))
+    
+    L -- Yes --> O[Confirm complete data restoration]
+    O --> P[Save 'Rollback Executed' in Audit Log]
+    P --> Q[Display success message on screen]
+    Q --> R((End))

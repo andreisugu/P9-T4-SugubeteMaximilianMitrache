@@ -67,40 +67,48 @@ export default function App() {
             <span className="text-xl font-bold tracking-wider">AFSMS</span>
           </div>
           
-          {currentPage === 'login' ? (
-            <button 
-              onClick={() => navigate('public')}
-              className="text-sm font-medium hover:text-blue-300 transition-colors"
-            >
-              Public Portal
-            </button>
-          ) : currentPage === 'public' ? (
-            <div className="flex items-center space-x-4">
+          <div className="flex items-center space-x-4">
+            {currentPage === 'login' ? (
+              <button 
+                onClick={() => navigate('public')}
+                className="text-sm font-medium hover:text-blue-300 transition-colors"
+              >
+                Public Portal
+              </button>
+            ) : currentPage === 'public' ? (
               <button 
                 onClick={() => navigate('login')}
                 className="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-md text-sm font-medium transition-colors"
               >
                 Login
               </button>
-            </div>
-          ) : (
-            <div className="flex items-center space-x-6">
-              <div className="flex items-center space-x-2 text-sm">
-                <User className="h-4 w-4" />
-                <span>logged_in_user</span>
-              </div>
-              <button className="text-slate-300 hover:text-white" title="Help">
-                <HelpCircle className="h-5 w-5" />
-              </button>
-              <button 
-                onClick={() => navigate('login')} 
-                className="text-slate-300 hover:text-red-400 flex items-center space-x-1"
-                title="Logout"
-              >
-                <LogOut className="h-5 w-5" />
-              </button>
-            </div>
-          )}
+            ) : (
+              <>
+                <div className="flex items-center space-x-2 text-sm">
+                  <User className="h-4 w-4" />
+                  <span>logged_in_user</span>
+                </div>
+                <button className="text-slate-300 hover:text-white" title="Help">
+                  <HelpCircle className="h-5 w-5" />
+                </button>
+                <button 
+                  onClick={() => navigate('login')} 
+                  className="text-slate-300 hover:text-red-400 flex items-center space-x-1"
+                  title="Logout"
+                >
+                  <LogOut className="h-5 w-5" />
+                </button>
+              </>
+            )}
+            {/* SUGU Diagrams Link - always visible */}
+            <button
+              className="text-sm font-medium hover:text-blue-300 transition-colors"
+              onClick={() => window.navigate ? window.navigate('/sugu-diagrams') : window.location.assign('/sugu-diagrams')}
+              style={{ marginLeft: 8 }}
+            >
+              SUGU Diagrams
+            </button>
+          </div>
         </div>
 
         {/* Meniu Privat - vizibil doar dacă nu suntem în login/public */}

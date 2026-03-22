@@ -1,0 +1,50 @@
+flowchart LR
+    %% Actors
+    Visitor(["Visitor"])
+    Student(["Student"])
+    Professor(["Professor / Teaching Staff"])
+    Registrar(["Registrar / Secretariat Staff"])
+    Admin(["System Administrator"])
+
+    %% System Modules
+    subgraph AFSMS [AFSMS High-Level System Overview]
+        UC_SSO([SSO Authentication])
+        UC_Web([Web Portal Access])
+        UC_Data([Data Collection])
+        UC_Rep([Reporting])
+        UC_Doc([Document Workflow])
+        UC_UG([User Groups])
+        UC_Val([Validation])
+        UC_Audit([Audit Logging])
+    end
+
+    %% Actor to Use Case Mapping
+    Visitor --> UC_Web
+    
+    Student --> UC_SSO
+    Professor --> UC_SSO
+    Registrar --> UC_SSO
+    Admin --> UC_SSO
+
+    UC_SSO -.->|<<include>>| UC_Web
+
+    Registrar --> UC_Data
+    Registrar --> UC_Rep
+    Registrar --> UC_Doc
+    Registrar --> UC_UG
+
+    Professor --> UC_Data
+    Professor --> UC_Rep
+
+    Student --> UC_Web
+    Student --> UC_Doc
+    Student --> UC_Rep
+
+    Admin --> UC_UG
+    Admin --> UC_Audit
+
+    %% Module Dependencies
+    UC_Data -.->|<<include>>| UC_Val
+    UC_Rep -.->|<<include>>| UC_Audit
+    UC_Doc -.->|<<include>>| UC_Audit
+    UC_UG -.->|<<include>>| UC_Audit

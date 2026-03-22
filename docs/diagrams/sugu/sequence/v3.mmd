@@ -1,0 +1,23 @@
+flowchart TD
+    subgraph Active_Client_Session ["Active Client Session"]
+        Session((Authenticated User Session))
+        MaliciousReq[Student attempts to access URL:\n/reports/e-grade-centralizer]
+        SafeDash((Redirect to Safe Dashboard))
+    end
+
+    subgraph Security_Middleware ["Security Middleware (Backend)"]
+        Intercept[System Intercepts HTTP Request]
+        RBAC{Check RBAC Matrix\nUser: Student vs Target: Registrar}
+        Reject[Reject Request: 403 Access Denied]
+    end
+
+    subgraph Persistence_Layer ["Persistence Layer (DBMS)"]
+        Audit[(Audit Log\nRecord Security Event & User ID)]
+    end
+
+    Session --> MaliciousReq
+    MaliciousReq --> Intercept
+    Intercept --> RBAC
+    RBAC -- "Privilege Check: FAILED" --> Reject
+    Reject -- "Log security violation" --> Audit
+    Audit -- "Force navigation" --> SafeDash

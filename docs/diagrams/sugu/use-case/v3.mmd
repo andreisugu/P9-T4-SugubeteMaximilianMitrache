@@ -1,0 +1,26 @@
+flowchart LR
+    %% Actor
+    Registrar(["Registrar / Secretariat Staff"])
+
+    %% Use Cases & Integrations
+    subgraph Secretariat_Workflow [Secretariat Deep-Dive]
+        UC_Cur([Manage Curricula])
+        UC_Imp([Import Excel Data])
+        UC_Gen([Generate e-Grade Centralizer])
+        UC_Msg([Send Group Messages])
+        
+        %% External Systems configured as Use Cases for logical mapping
+        UC_Excel([Microsoft Excel Integration])
+        UC_Outlook([Microsoft Outlook Integration])
+    end
+
+    %% Base Interactions
+    Registrar --> UC_Cur
+    Registrar --> UC_Imp
+    Registrar --> UC_Gen
+    Registrar --> UC_Msg
+
+    %% Include Relationships
+    UC_Gen -.->|<<include>>| UC_Excel
+    UC_Imp -.->|<<include>>| UC_Excel
+    UC_Msg -.->|<<include>>| UC_Outlook

@@ -1,0 +1,52 @@
+classDiagram
+    direction LR
+
+    class Professor_X_Account {
+        <<Instance>>
+        AccountID: "P-8472"
+        Username: "prof.x@ucv.ro"
+    }
+    
+    class Professor_Role {
+        <<Role>>
+        RoleName: "Teaching Staff"
+    }
+    
+    class Write_Grade_Permission {
+        <<Permission>>
+        Action: "UPDATE"
+        Resource: "Academic_Record"
+    }
+
+    class Student_Y_Record {
+        <<Target Object>>
+        StudentID: "S-1093"
+        RecordData: "Session Grades"
+    }
+
+    class Student_Y_Account {
+        <<Instance>>
+        AccountID: "S-1093-ACC"
+        Username: "student.y@ucv.ro"
+    }
+
+    class Student_Role {
+        <<Role>>
+        RoleName: "Student"
+    }
+
+    class Read_Grade_Permission {
+        <<Permission>>
+        Action: "READ"
+        Resource: "Own_Academic_Record"
+    }
+
+    Professor_X_Account --> Professor_Role : assigned to
+    Professor_Role --> Write_Grade_Permission : includes
+    Write_Grade_Permission --> Student_Y_Record : <<ALLOWS>> Modification
+    
+    Student_Y_Account --> Student_Role : assigned to
+    Student_Role --> Read_Grade_Permission : includes
+    Read_Grade_Permission --> Student_Y_Record : <<ALLOWS>> Read Only
+    
+    Student_Y_Account ..> Write_Grade_Permission : <<DENIED>> Violates Least Privilege

@@ -1,0 +1,19 @@
+flowchart TD
+    Req([Request Arrives at System]) --> Extract[Extract SessionToken]
+    Extract --> ValToken{Is SessionToken Valid?}
+    
+    ValToken -- Yes --> QueryAcc[Query UserAccount for Assigned Role]
+    ValToken -- No --> Denied[Deny Access / 401 Unauthorized]
+    
+    QueryAcc --> QueryRole[Query Role for Permissions]
+    QueryRole --> MapPerm[Map Permission against requested SystemModule]
+    
+    MapPerm --> Eval{Does Permission match Action?}
+    
+    Eval -- Yes --> Allowed[Allow Access / Execute Action]
+    Eval -- No --> Denied[Deny Access / 403 Forbidden]
+    
+    Allowed --> Log[Log Audit Trail to DBMS]
+    Denied --> Log
+    
+    Log --> End([End Workflow])
