@@ -5,34 +5,21 @@ import App from './App.jsx';
 import SuguDiagramsPage from './SuguDiagramsPage.jsx';
 import './index.css';
 
-// Simple client-side router
-function Router() {
-  const [route, setRoute] = React.useState(window.location.pathname);
+import { HashRouter, Routes, Route, useNavigate } from 'react-router-dom';
 
-  React.useEffect(() => {
-    const onPopState = () => setRoute(window.location.pathname);
-    window.addEventListener('popstate', onPopState);
-    return () => window.removeEventListener('popstate', onPopState);
-  }, []);
-
-  // Navigation helper
-  const navigate = (to) => {
-    window.history.pushState({}, '', to);
-    setRoute(to);
-  };
-
-  React.useEffect(() => {
-    window.navigate = navigate;
-  }, []);
-
-  if (route === '/sugu-diagrams') {
-    return <SuguDiagramsPage />;
-  }
-  return <App />;
+function MainRouter() {
+  return (
+    <Routes>
+      <Route path="/sugu-diagrams" element={<SuguDiagramsPage />} />
+      <Route path="/*" element={<App />} />
+    </Routes>
+  );
 }
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
-    <Router />
+    <HashRouter>
+      <MainRouter />
+    </HashRouter>
   </React.StrictMode>
 );

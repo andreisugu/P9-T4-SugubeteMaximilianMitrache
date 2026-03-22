@@ -101,13 +101,13 @@ export default function App() {
               </>
             )}
             {/* SUGU Diagrams Link - always visible */}
-            <button
+            <a
               className="text-sm font-medium hover:text-blue-300 transition-colors"
-              onClick={() => window.navigate ? window.navigate('/sugu-diagrams') : window.location.assign('/sugu-diagrams')}
+              href="#/sugu-diagrams"
               style={{ marginLeft: 8 }}
             >
               SUGU Diagrams
-            </button>
+            </a>
           </div>
         </div>
 
