@@ -1,32 +1,41 @@
 stateDiagram-v2
-    direction TD
     
     state "Public Zone" as PublicZone {
-        Unauthenticated: Unauthenticated (Public Portal)
+        Unauthenticated
     }
+    Unauthenticated: Unauthenticated (Public Portal)
     
     state "External Identity Provider" as IdP {
-        SSO: SSO Subsystem Redirect (ucv.ro)
+        SSO
     }
+    SSO: SSO Subsystem Redirect (ucv.ro)
     
     state "AFSMS Core System" as Core {
-        Validate: Token Validation (SAML/OAuth)
-        Role: Role Assignment (DB Query)
         state access_decision <<choice>>
+        Validate
+        AssignRole
     }
+    Validate: Token Validation (SAML/OAuth)
+    AssignRole: Role Assignment (DB Query)
     
     state "Private Zone" as PrivateZone {
-        Auth: Authenticated (Private Dashboard)
-        Denied: Access Denied
+        Auth
     }
+    Auth: Authenticated (Private Dashboard)
+    
+    state "Boundary Control" as Boundary {
+        Denied
+    }
+    Denied: Access Denied / 403
 
     [*] --> Unauthenticated
     Unauthenticated --> SSO : Initiate Login
     SSO --> Validate : Return Token
-    Validate --> Role : Token Validated
+    Validate --> AssignRole : Token Validated
     Validate --> Denied : Token Invalid/Expired
-    Role --> access_decision : Evaluate Identity
+    AssignRole --> access_decision : Evaluate Identity
     access_decision --> Auth : Role Authorized
     access_decision --> Denied : Role Unauthorized
+    
     Auth --> [*]
-    Denied --> [*]
+    Denied --> Unauthenticated : Redirect to Login
