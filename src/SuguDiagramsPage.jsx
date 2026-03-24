@@ -15,9 +15,24 @@ const suguDiagrams = [
       'diagrams/sugu/use-case/use-case_v3_secretariat_workflow.png',
     ],
     display: [
-      'diagrams/sugu/use-case/use-case_v1.svg',
-      'diagrams/sugu/use-case/use-case_v2.svg',
-      'diagrams/sugu/use-case/use-case_v3.svg',
+      {
+        file: 'diagrams/sugu/use-case/use-case_v1.svg',
+        title: 'AFSMS High-Level System Overview',
+        description:
+          'Maps all system actors — Visitor, Student, Professor, Registrar, and Admin — to their respective modules. Highlights SSO as the central authentication gateway included by all authenticated roles. Audit Logging underpins Reporting, Document Workflow, and User Group management as a cross-cutting dependency.',
+      },
+      {
+        file: 'diagrams/sugu/use-case/use-case_v2.svg',
+        title: 'Secretariat Deep-Dive',
+        description:
+          'Focuses exclusively on the Registrar\'s operational scope within the system. Covers curricula management, Excel-based data import, e-Grade Centralizer generation, and group messaging. Microsoft Excel and Outlook integrations are modeled as included subsystems tied to data and communication actions.',
+      },
+      {
+        file: 'diagrams/sugu/use-case/use-case_v3.svg',
+        title: 'Student & Professor Interactions',
+        description:
+          'Defines the academic-facing use cases shared between teaching staff and students. Professors handle grade editing and study formation views, while students access grades, documents, and reports. A validation error extension on grade editing enforces data integrity during faculty input.',
+      },
     ],
   },
   {
@@ -31,9 +46,24 @@ const suguDiagrams = [
       'diagrams/sugu/activity/activity_v3.png',
     ],
     display: [
-      'diagrams/sugu/activity/activity_v1.svg',
-      'diagrams/sugu/activity/activity_v2.svg',
-      'diagrams/sugu/activity/activity_v3.svg',
+      {
+        file: 'diagrams/sugu/activity/activity_v1.svg',
+        title: 'Document Submission & Routing',
+        description:
+          'Traces a document\'s lifecycle from user submission through portal validation to server-side routing. The AFSMS server determines whether the document is informational, pending approval, or requires modification, then commits the state to the database. Audit logging and Outlook notifications are triggered asynchronously post-commit.',
+      },
+      {
+        file: 'diagrams/sugu/activity/activity_v2.svg',
+        title: 'Grade Report Generation',
+        description:
+          'Describes the end-to-end flow for generating a student grade centralizer report. The system validates data completeness after retrieval, sorts results alphabetically, and presents them in tabular form. Users then select an export format — PDF, XLS, or CSV — to download the final report.',
+      },
+      {
+        file: 'diagrams/sugu/activity/activity_v3.svg',
+        title: 'Admin Rollback Operation',
+        description:
+          'Outlines the privileged workflow for reverting the system to a prior state T-1. Admin privileges are verified before audit log access is granted and a target state is selected. Rollback success or failure is explicitly handled, with the outcome recorded in the audit log either way.',
+      },
     ],
   },
   {
@@ -47,9 +77,24 @@ const suguDiagrams = [
       'diagrams/sugu/sequence/sequence_v3.png',
     ],
     display: [
-      'diagrams/sugu/sequence/sequence_v1.svg',
-      'diagrams/sugu/sequence/sequence_v2.svg',
-      'diagrams/sugu/sequence/sequence_v3.svg',
+      {
+        file: 'diagrams/sugu/sequence/sequence_v1.svg',
+        title: 'SSO Authentication State Diagram',
+        description:
+          'Models the full authentication lifecycle from unauthenticated public access through SSO redirect to role assignment. Token validation via SAML/OAuth gates entry into the private zone, with invalid or expired tokens redirected to an access-denied boundary. Unauthorized roles are similarly denied and looped back to the login screen.',
+      },
+      {
+        file: 'diagrams/sugu/sequence/sequence_v2.svg',
+        title: 'RBAC User Registration & Access Flow',
+        description:
+          'Illustrates how a user moves from registration to restricted action execution under role-based access control. The system assigns predefined rights at registration, blocks insufficient privilege attempts, and allows an admin to customize the RBAC profile. Once updated, the user retries the action with elevated permissions.',
+      },
+      {
+        file: 'diagrams/sugu/sequence/sequence_v3.svg',
+        title: 'Unauthorized Access Attempt',
+        description:
+          'Simulates a student attempting to access a Registrar-restricted URL within an active authenticated session. Security middleware intercepts the HTTP request and evaluates it against the RBAC matrix, resulting in a 403 rejection. The violation is logged to the audit database and the user is force-navigated to a safe dashboard.',
+      },
     ],
   },
   {
@@ -63,9 +108,24 @@ const suguDiagrams = [
       'diagrams/sugu/role-based-access-control/rbac_v3.png',
     ],
     display: [
-      'diagrams/sugu/role-based-access-control/rbac_v1.svg',
-      'diagrams/sugu/role-based-access-control/rbac_v2.svg',
-      'diagrams/sugu/role-based-access-control/rbac_v3.svg',
+      {
+        file: 'diagrams/sugu/role-based-access-control/rbac_v1.svg',
+        title: 'RBAC Core Class Diagram',
+        description:
+          'Defines the structural data model underpinning the access control system. Users own accounts, accounts issue session tokens and are assigned roles, and roles contain permissions. Permissions in turn govern access to specific system modules, forming a clean least-privilege hierarchy.',
+      },
+      {
+        file: 'diagrams/sugu/role-based-access-control/rbac_v2.svg',
+        title: 'RBAC Request Authorization Workflow',
+        description:
+          'Details the runtime access decision process for every incoming system request. A valid session token triggers role and permission queries, which are mapped against the requested module and action. Both allowed and denied outcomes feed into a centralized audit trail before the workflow concludes.',
+      },
+      {
+        file: 'diagrams/sugu/role-based-access-control/rbac_v3.svg',
+        title: 'Professor & Student Permission Instance Diagram',
+        description:
+          'Provides a concrete runtime example of two roles operating on the same academic record. The Professor account holds UPDATE permission on Academic Records, while the Student account is limited to READ on their own record. An explicit denial arrow from the Student account to the Write permission enforces the least-privilege principle visually.',
+      },
     ],
   },
 ];
@@ -74,9 +134,11 @@ const suguDiagrams = [
 export default function SuguDiagramsPage() {
   // Flatten all images for modal navigation
   const allImages = suguDiagrams.flatMap((group) =>
-    group.display.map((file, idx) => ({
-      src: BASE + file,
-      label: `${group.category} - ${file.split('/').pop()}`,
+    group.display.map((item, idx) => ({
+      src: BASE + item.file,
+      label: `${group.category} - ${item.file.split('/').pop()}`,
+      title: item.title,
+      description: item.description,
       group: group.category,
       idx,
     }))
@@ -124,18 +186,20 @@ export default function SuguDiagramsPage() {
         <div key={group.category} className="mb-10">
           <h3 className="text-lg font-semibold text-blue-700 mb-4">{group.category}</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {group.display.map((file, idx) => {
-              const imgSrc = BASE + file;
+            {group.display.map((item, idx) => {
+              const imgSrc = BASE + item.file;
               const globalIdx = allImages.findIndex((img) => img.src === imgSrc);
               return (
-                <div key={file} className="bg-white rounded-lg shadow border border-slate-200 p-4 flex flex-col items-center">
+                <div key={item.file} className="bg-white rounded-lg shadow border border-slate-200 p-4 flex flex-col items-center">
                   <img
                     src={imgSrc}
                     alt={`${group.category} Diagram ${idx + 1}`}
-                    className="max-w-full max-h-80 object-contain mb-2 cursor-pointer transition hover:scale-105"
+                    className="max-w-full max-h-80 object-contain mb-3 cursor-pointer transition hover:scale-105"
                     onClick={() => setModalIdx(globalIdx)}
                   />
-                  <span className="text-xs text-slate-500 break-all">{file.split('/').pop()}</span>
+                  <p className="text-sm font-semibold text-slate-700 text-center mb-1">{item.title}</p>
+                  <p className="text-xs text-slate-500 text-center leading-relaxed mb-2">{item.description}</p>
+                  <span className="text-xs text-slate-400 break-all">{item.file.split('/').pop()}</span>
                 </div>
               );
             })}
@@ -214,7 +278,7 @@ export default function SuguDiagramsPage() {
           </button>
           <div className="absolute bottom-6 left-0 right-0 text-center flex flex-col items-center">
             <span className="inline-block bg-white bg-opacity-90 text-black rounded shadow px-3 py-1 text-sm font-medium mb-1" style={{textShadow: '0 2px 8px #0008'}}>
-              {allImages[modalIdx].label} ({modalIdx + 1} / {allImages.length})
+              {allImages[modalIdx].title} ({modalIdx + 1} / {allImages.length})
             </span>
             <span className="inline-block bg-white bg-opacity-80 text-black rounded shadow px-2 py-0.5 text-xs font-normal" style={{textShadow: '0 2px 8px #0008'}}>
               ESC to close, ←/→ to navigate, Mouse wheel/± to zoom, drag to pan
