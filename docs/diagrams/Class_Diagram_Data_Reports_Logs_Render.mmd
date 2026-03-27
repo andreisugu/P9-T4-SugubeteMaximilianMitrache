@@ -1,0 +1,420 @@
+classDiagram
+direction LR
+
+%% ════════════════════════════════════════════════════════════════
+%% DATA MODULE
+%% ════════════════════════════════════════════════════════════════
+
+class AcademicYear {
+  +UUID id
+  +int yearStart
+  +int yearEnd
+  +bool isActive
+}
+
+class Specialization {
+  +UUID id
+  +string code
+  +string name
+  +string degreeLevel
+  +bool isActive
+}
+
+class StudyFormation {
+  +UUID id
+  +string code
+  +string name
+  +string educationForm
+  +int studyYear
+  +int groupIndex
+  +bool isActive
+}
+
+class Curriculum {
+  +UUID id
+  +string code
+  +string name
+  +date validFrom
+  +date validTo
+  +string status
+  +createSnapshot() CurriculumSnapshot
+}
+
+%% [NEW-6.1] Immutable snapshot — curriculum edits must not alter historical grades
+class CurriculumSnapshot {
+  +UUID id
+  +UUID curriculumId
+  +date snapshotDate
+  +string disciplinesSerialized
+  +string snapshotStatus
+  +getSubjects() List
+}
+
+class Discipline {
+  +UUID id
+  +string code
+  +string name
+  +int semester
+  +string evaluationType
+  +int ectsCredits
+  +int contactHours
+}
+
+class Student {
+  +UUID id
+  +string registrationNumber
+  +string firstName
+  +string lastName
+  +string email
+  +date enrollmentDate
+  +string status
+}
+
+class Grade {
+  +UUID id
+  +UUID curriculumSnapshotId
+  +UUID gradedByUserId
+  +decimal value
+  +string examSession
+  +date gradingDate
+  +string source
+  +bool validated
+  +validate() bool
+}
+
+class DataImportJob {
+  +UUID id
+  +string sourceType
+  +string sourceName
+  +datetime startedAt
+  +datetime finishedAt
+  +string status
+  +int importedRecords
+  +int rejectedRecords
+  +UUID initiatedByUserId
+  +execute() void
+  +rollback() void
+}
+
+class DataTransformationRule {
+  +UUID id
+  +string name
+  +string ruleType
+  +string inputField
+  +string outputField
+  +string expression
+  +int executionOrder
+  +bool enabled
+}
+
+class ImportJobRule {
+  +UUID id
+  +UUID importJobId
+  +UUID transformationRuleId
+  +int appliedOrder
+}
+
+class ValidationError {
+  +UUID id
+  +string entityType
+  +UUID entityId
+  +string fieldName
+  +string errorCode
+  +string message
+  +string resolutionHint
+  +datetime createdAt
+}
+
+%% ════════════════════════════════════════════════════════════════
+%% DOCUMENT MANAGEMENT MODULE  [NEW 4.8 + 4.9]
+%% ════════════════════════════════════════════════════════════════
+
+class Document {
+  +UUID id
+  +UUID authorId
+  +string title
+  +string type
+  +string status
+  +datetime createdAt
+  +string content
+  +circulate() void
+  +archive() void
+  +search(type, fromDate, toDate, authorId, contentQuery) List
+}
+
+%% ════════════════════════════════════════════════════════════════
+%% REPORTS MODULE
+%% ════════════════════════════════════════════════════════════════
+
+class ReportDefinition {
+  +UUID id
+  +string code
+  +string name
+  +string reportType
+  +string visibility
+  +string defaultSort
+  +bool active
+}
+
+class ReportRequest {
+  +UUID id
+  +UUID reportDefinitionId
+  +UUID requestedByUserId
+  +datetime requestedAt
+  +string status
+  +string filterJson
+}
+
+class EGradeCentralizer {
+  +UUID id
+  +UUID reportRequestId
+  +UUID specializationId
+  +UUID academicYearId
+  +int studyYear
+  +string educationForm
+  +string ordering
+  +datetime generatedAt
+}
+
+class ReportRow {
+  +UUID id
+  +UUID centralizerId
+  +UUID studentId
+  +string studentFullName
+  +decimal averageGrade
+  +int creditsAccumulated
+  +string rowPayloadJson
+}
+
+class ReportExport {
+  +UUID id
+  +UUID reportRequestId
+  +string format
+  +string fileName
+  +string storagePath
+  +datetime exportedAt
+  +UUID exportedByUserId
+  +export() File
+}
+
+%% ════════════════════════════════════════════════════════════════
+%% SECURITY / USER MODULE
+%% ════════════════════════════════════════════════════════════════
+
+%% [NEW-4.3] SSO session — SAML2/OAuth2 token lifecycle
+class AuthSession {
+  +UUID id
+  +UUID userAccountId
+  +string sessionToken
+  +datetime issuedAt
+  +datetime expiresAt
+  +string ipAddress
+  +validate() bool
+  +revoke() void
+}
+
+class UserAccount {
+  +UUID id
+  +string ssoSubject
+  +string username
+  +string email
+  +string fullName
+  +string accountStatus
+  +register() void
+  +login() void
+  +logout() void
+}
+
+class Role {
+  +UUID id
+  +string code
+  +string name
+  +string description
+}
+
+class Permission {
+  +UUID id
+  +string code
+  +string module
+  +string action
+  +string description
+}
+
+class Operation {
+  +UUID id
+  +string code
+  +string module
+  +string action
+  +string description
+}
+
+%% [NEW] Junction class — aligns with USER_ROLE table in ER
+class UserRoleAssignment {
+  +UUID id
+  +UUID userAccountId
+  +UUID roleId
+  +datetime assignedAt
+}
+
+%% [NEW] Junction class — aligns with ROLE_PERMISSION table in ER
+class RolePermissionGrant {
+  +UUID id
+  +UUID roleId
+  +UUID permissionId
+  +datetime grantedAt
+}
+
+%% [NEW] Junction class — aligns with ROLE_OPERATION table in ER
+class RoleOperationGrant {
+  +UUID id
+  +UUID roleId
+  +UUID operationId
+  +datetime grantedAt
+}
+
+%% [NEW-4.10] User groups — REQ-AFSMS-180..184
+class UserGroup {
+  +UUID id
+  +string name
+  +string description
+  +addMember(userId) void
+  +removeMember(userId) void
+  +sendEmailToAll(subject, body) void
+}
+
+%% [NEW-4.10] Junction for UserGroup membership
+class UserGroupMember {
+  +UUID id
+  +UUID groupId
+  +UUID userAccountId
+  +datetime joinedAt
+}
+
+%% [NEW-4.11] Outlook notification — Microsoft Graph API
+class OutlookNotification {
+  +UUID id
+  +UUID sentByUserId
+  +string recipients
+  +string subject
+  +string bodyPreview
+  +datetime sentAt
+  +string deliveryStatus
+  +send() void
+}
+
+class AuditLogEntry {
+  +UUID id
+  +UUID actorUserId
+  +string actionType
+  +string module
+  +string entityType
+  +UUID entityId
+  +string beforeSnapshotJson
+  +string afterSnapshotJson
+  +string sourceIp
+  +datetime occurredAt
+  +bool success
+  +string errorMessage
+}
+
+class RollbackOperation {
+  +UUID id
+  +UUID triggeredByUserId
+  +datetime targetPointInTime
+  +string reason
+  +datetime startedAt
+  +datetime finishedAt
+  +string status
+}
+
+class RecoveryPoint {
+  +UUID id
+  +datetime pointInTime
+  +string backupReference
+  +string transactionReference
+  +bool available
+}
+
+class BackupJob {
+  +UUID id
+  +string backupType
+  +datetime scheduledAt
+  +datetime startedAt
+  +datetime finishedAt
+  +string storageLocation
+  +string checksum
+  +string status
+}
+
+%% [NEW] Junction class — aligns with BACKUP_JOB_RECOVERY_POINT in ER
+class BackupJobRecoveryPoint {
+  +UUID id
+  +UUID backupJobId
+  +UUID recoveryPointId
+  +datetime linkedAt
+}
+
+%% ════════════════════════════════════════════════════════════════
+%% RELATIONSHIPS — DATA MODULE
+%% ════════════════════════════════════════════════════════════════
+
+Specialization "1" --> "0..*" StudyFormation : groups
+Specialization "1" --> "0..*" Curriculum : governs
+Curriculum "1" *-- "1..*" Discipline : contains
+Curriculum "1" --> "0..*" CurriculumSnapshot : snapshots
+StudyFormation "1" --> "0..*" Student : enrolls
+Student "1" --> "0..*" Grade : receives
+Discipline "1" --> "0..*" Grade : assessedBy
+AcademicYear "1" --> "0..*" Grade : scopedBy
+CurriculumSnapshot "1" --> "0..*" Grade : anchors
+UserAccount "1" --> "0..*" Grade : grades
+DataImportJob "1" --> "0..*" ValidationError : produces
+DataImportJob "1" --> "0..*" ImportJobRule : applies
+DataTransformationRule "1" --> "0..*" ImportJobRule : configuredIn
+UserAccount "1" --> "0..*" DataImportJob : initiates
+
+%% ════════════════════════════════════════════════════════════════
+%% RELATIONSHIPS — DOCUMENT MODULE
+%% ════════════════════════════════════════════════════════════════
+
+UserAccount "1" --> "0..*" Document : authors
+
+%% ════════════════════════════════════════════════════════════════
+%% RELATIONSHIPS — REPORTS MODULE
+%% ════════════════════════════════════════════════════════════════
+
+ReportDefinition "1" --> "0..*" ReportRequest : instantiatedAs
+ReportRequest "1" --> "0..1" EGradeCentralizer : generates
+EGradeCentralizer "1" *-- "1..*" ReportRow : contains
+ReportRequest "1" --> "0..*" ReportExport : exportedAs
+Specialization "1" --> "0..*" EGradeCentralizer : groupedBy
+AcademicYear "1" --> "0..*" EGradeCentralizer : scopes
+ReportRow "1" --> "1" Student : references
+UserAccount "1" --> "0..*" ReportRequest : requests
+UserAccount "1" --> "0..*" ReportExport : exports
+
+%% ════════════════════════════════════════════════════════════════
+%% RELATIONSHIPS — SECURITY MODULE
+%% ════════════════════════════════════════════════════════════════
+
+UserAccount "1" --> "0..*" AuthSession : authenticates via
+UserAccount "1" --> "0..*" UserRoleAssignment : assigned
+Role "1" --> "0..*" UserRoleAssignment : mapped
+Role "1" --> "0..*" RolePermissionGrant : grants
+Permission "1" --> "0..*" RolePermissionGrant : granted to
+Role "1" --> "0..*" RoleOperationGrant : allows
+Operation "1" --> "0..*" RoleOperationGrant : allowed by
+UserGroup "1" *-- "1..*" UserGroupMember : has
+UserAccount "1" --> "0..*" UserGroupMember : member of
+UserGroup "1" --> "0..*" OutlookNotification : broadcasts
+UserAccount "1" --> "0..*" OutlookNotification : sends
+UserAccount "1" --> "0..*" AuditLogEntry : performs
+Operation "1" --> "0..*" AuditLogEntry : categorizedAs
+DataImportJob "1" --> "0..*" AuditLogEntry : loggedBy
+ReportRequest "1" --> "0..*" AuditLogEntry : loggedBy
+ReportExport "1" --> "0..*" AuditLogEntry : loggedBy
+Grade "1" --> "0..*" AuditLogEntry : loggedBy
+UserAccount "1" --> "0..*" RollbackOperation : triggers
+RollbackOperation "0..*" --> "0..1" RecoveryPoint : targets
+BackupJob "1" --> "0..*" BackupJobRecoveryPoint : creates
+RecoveryPoint "1" --> "0..*" BackupJobRecoveryPoint : linked to

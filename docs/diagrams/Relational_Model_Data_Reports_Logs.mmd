@@ -1,0 +1,412 @@
+erDiagram
+
+    %% =========================
+    %% DATA MODULE
+    %% =========================
+
+    ACADEMIC_YEAR {
+        UUID id PK
+        INT year_start
+        INT year_end
+        BOOLEAN is_active
+    }
+
+    SPECIALIZATION {
+        UUID id PK
+        STRING code UK
+        STRING name
+        STRING degree_level
+        BOOLEAN is_active
+    }
+
+    STUDY_FORMATION {
+        UUID id PK
+        UUID specialization_id FK
+        STRING code UK
+        STRING name
+        STRING education_form
+        INT study_year
+        INT group_index
+        BOOLEAN is_active
+    }
+
+    CURRICULUM {
+        UUID id PK
+        UUID specialization_id FK
+        STRING code UK
+        STRING name
+        DATE valid_from
+        DATE valid_to
+        STRING status
+    }
+
+    CURRICULUM_SNAPSHOT {
+        UUID id PK
+        UUID curriculum_id FK
+        DATE snapshot_date
+        TEXT disciplines_serialized
+        STRING snapshot_status
+    }
+
+    DISCIPLINE {
+        UUID id PK
+        UUID curriculum_id FK
+        STRING code UK
+        STRING name
+        INT semester
+        STRING evaluation_type
+        INT ects_credits
+        INT contact_hours
+    }
+
+    STUDENT {
+        UUID id PK
+        UUID study_formation_id FK
+        STRING registration_number UK
+        STRING first_name
+        STRING last_name
+        STRING email UK
+        DATE enrollment_date
+        STRING status
+    }
+
+    GRADE {
+        UUID id PK
+        UUID student_id FK
+        UUID discipline_id FK
+        UUID academic_year_id FK
+        UUID curriculum_snapshot_id FK
+        UUID graded_by_user_id FK
+        DECIMAL value
+        STRING exam_session
+        DATE grading_date
+        STRING source
+        BOOLEAN validated
+    }
+
+    DATA_IMPORT_JOB {
+        UUID id PK
+        UUID initiated_by_user_id FK
+        STRING source_type
+        STRING source_name
+        DATETIME started_at
+        DATETIME finished_at
+        STRING status
+        INT imported_records
+        INT rejected_records
+    }
+
+    DATA_TRANSFORMATION_RULE {
+        UUID id PK
+        STRING name
+        STRING rule_type
+        STRING input_field
+        STRING output_field
+        STRING expression
+        INT execution_order
+        BOOLEAN enabled
+    }
+
+    IMPORT_JOB_RULE {
+        UUID id PK
+        UUID import_job_id FK
+        UUID transformation_rule_id FK
+        INT applied_order
+    }
+
+    VALIDATION_ERROR {
+        UUID id PK
+        UUID import_job_id FK
+        STRING entity_type
+        UUID entity_id
+        STRING field_name
+        STRING error_code
+        STRING message
+        STRING resolution_hint
+        DATETIME created_at
+    }
+
+    %% =========================
+    %% DOCUMENT MANAGEMENT MODULE  [NEW 4.8 + 4.9]
+    %% =========================
+
+    DOCUMENT {
+        UUID id PK
+        UUID author_id FK
+        STRING title
+        STRING type
+        STRING status
+        DATETIME created_at
+        TEXT content
+    }
+
+    %% =========================
+    %% REPORTS MODULE
+    %% =========================
+
+    REPORT_DEFINITION {
+        UUID id PK
+        STRING code UK
+        STRING name
+        STRING report_type
+        STRING visibility
+        STRING default_sort
+        BOOLEAN active
+    }
+
+    REPORT_REQUEST {
+        UUID id PK
+        UUID report_definition_id FK
+        UUID requested_by_user_id FK
+        DATETIME requested_at
+        STRING status
+        STRING filter_json
+    }
+
+    E_GRADE_CENTRALIZER {
+        UUID id PK
+        UUID report_request_id FK
+        UUID specialization_id FK
+        UUID academic_year_id FK
+        INT study_year
+        STRING education_form
+        STRING ordering
+        DATETIME generated_at
+    }
+
+    REPORT_ROW {
+        UUID id PK
+        UUID centralizer_id FK
+        UUID student_id FK
+        STRING student_full_name
+        DECIMAL average_grade
+        INT credits_accumulated
+        STRING row_payload_json
+    }
+
+    REPORT_EXPORT {
+        UUID id PK
+        UUID report_request_id FK
+        UUID exported_by_user_id FK
+        STRING format
+        STRING file_name
+        STRING storage_path
+        DATETIME exported_at
+    }
+
+    %% =========================
+    %% SECURITY / USER MODULE
+    %% =========================
+
+    AUTH_SESSION {
+        UUID id PK
+        UUID user_account_id FK
+        STRING session_token UK
+        DATETIME issued_at
+        DATETIME expires_at
+        STRING ip_address
+    }
+
+    USER_ACCOUNT {
+        UUID id PK
+        STRING sso_subject UK
+        STRING username UK
+        STRING email UK
+        STRING full_name
+        STRING account_status
+    }
+
+    ROLE {
+        UUID id PK
+        STRING code UK
+        STRING name
+        STRING description
+    }
+
+    PERMISSION {
+        UUID id PK
+        STRING code UK
+        STRING module
+        STRING action
+        STRING description
+    }
+
+    OPERATION {
+        UUID id PK
+        STRING code UK
+        STRING module
+        STRING action
+        STRING description
+    }
+
+    USER_ROLE {
+        UUID id PK
+        UUID user_id FK
+        UUID role_id FK
+        DATETIME assigned_at
+    }
+
+    ROLE_PERMISSION {
+        UUID id PK
+        UUID role_id FK
+        UUID permission_id FK
+        DATETIME granted_at
+    }
+
+    ROLE_OPERATION {
+        UUID id PK
+        UUID role_id FK
+        UUID operation_id FK
+        DATETIME granted_at
+    }
+
+    USER_GROUP {
+        UUID id PK
+        STRING name
+        STRING description
+    }
+
+    USER_GROUP_MEMBER {
+        UUID id PK
+        UUID group_id FK
+        UUID user_account_id FK
+        DATETIME joined_at
+    }
+
+    OUTLOOK_NOTIFICATION {
+        UUID id PK
+        UUID sent_by_user_id FK
+        UUID user_group_id FK
+        STRING recipients
+        STRING subject
+        STRING body_preview
+        DATETIME sent_at
+        STRING delivery_status
+    }
+
+    AUDIT_LOG_ENTRY {
+        UUID id PK
+        UUID actor_user_id FK
+        UUID operation_id FK
+        STRING action_type
+        STRING module
+        STRING entity_type
+        UUID entity_id
+        UUID data_import_job_id FK
+        UUID report_request_id FK
+        UUID report_export_id FK
+        UUID grade_id FK
+        STRING before_snapshot_json
+        STRING after_snapshot_json
+        STRING source_ip
+        DATETIME occurred_at
+        BOOLEAN success
+        STRING error_message
+    }
+
+    ROLLBACK_OPERATION {
+        UUID id PK
+        UUID triggered_by_user_id FK
+        UUID recovery_point_id FK
+        DATETIME target_point_in_time
+        STRING reason
+        DATETIME started_at
+        DATETIME finished_at
+        STRING status
+    }
+
+    RECOVERY_POINT {
+        UUID id PK
+        DATETIME point_in_time
+        STRING backup_reference
+        STRING transaction_reference
+        BOOLEAN available
+    }
+
+    BACKUP_JOB {
+        UUID id PK
+        STRING backup_type
+        DATETIME scheduled_at
+        DATETIME started_at
+        DATETIME finished_at
+        STRING storage_location
+        STRING checksum
+        STRING status
+    }
+
+    BACKUP_JOB_RECOVERY_POINT {
+        UUID id PK
+        UUID backup_job_id FK
+        UUID recovery_point_id FK
+        DATETIME linked_at
+    }
+
+    %% =========================
+    %% CARDINALITIES — DATA MODULE
+    %% =========================
+
+    SPECIALIZATION ||--o{ STUDY_FORMATION : has
+    SPECIALIZATION ||--o{ CURRICULUM : owns
+    CURRICULUM ||--|{ DISCIPLINE : contains
+    CURRICULUM ||--o{ CURRICULUM_SNAPSHOT : snapshots
+    CURRICULUM_SNAPSHOT ||--o{ GRADE : anchors
+    STUDY_FORMATION ||--o{ STUDENT : enrolls
+    STUDENT ||--o{ GRADE : receives
+    DISCIPLINE ||--o{ GRADE : evaluates
+    ACADEMIC_YEAR ||--o{ GRADE : scopes
+    USER_ACCOUNT ||--o{ GRADE : grades
+
+    USER_ACCOUNT ||--o{ DATA_IMPORT_JOB : initiates
+    DATA_IMPORT_JOB ||--o{ VALIDATION_ERROR : produces
+    DATA_IMPORT_JOB ||--o{ IMPORT_JOB_RULE : applies
+    DATA_TRANSFORMATION_RULE ||--o{ IMPORT_JOB_RULE : used_in
+
+    %% =========================
+    %% CARDINALITIES — DOCUMENT MODULE
+    %% =========================
+
+    USER_ACCOUNT ||--o{ DOCUMENT : authors
+
+    %% =========================
+    %% CARDINALITIES — REPORTS MODULE
+    %% =========================
+
+    REPORT_DEFINITION ||--o{ REPORT_REQUEST : instantiates
+    USER_ACCOUNT ||--o{ REPORT_REQUEST : requests
+    REPORT_REQUEST ||--o| E_GRADE_CENTRALIZER : generates
+    SPECIALIZATION ||--o{ E_GRADE_CENTRALIZER : grouped_by
+    ACADEMIC_YEAR ||--o{ E_GRADE_CENTRALIZER : scopes
+    E_GRADE_CENTRALIZER ||--|{ REPORT_ROW : contains
+    STUDENT ||--o{ REPORT_ROW : represented_by
+    REPORT_REQUEST ||--o{ REPORT_EXPORT : exported_as
+    USER_ACCOUNT ||--o{ REPORT_EXPORT : exports
+
+    %% =========================
+    %% CARDINALITIES — SECURITY MODULE
+    %% =========================
+
+    USER_ACCOUNT ||--o{ AUTH_SESSION : authenticates_via
+
+    USER_ACCOUNT ||--o{ USER_ROLE : assigned
+    ROLE ||--o{ USER_ROLE : mapped
+    ROLE ||--o{ ROLE_PERMISSION : grants
+    PERMISSION ||--o{ ROLE_PERMISSION : granted_to
+    ROLE ||--o{ ROLE_OPERATION : allows
+    OPERATION ||--o{ ROLE_OPERATION : allowed_by
+
+    USER_GROUP ||--|{ USER_GROUP_MEMBER : has
+    USER_ACCOUNT ||--o{ USER_GROUP_MEMBER : member_of
+    USER_ACCOUNT ||--o{ OUTLOOK_NOTIFICATION : sends
+    USER_GROUP ||--o{ OUTLOOK_NOTIFICATION : broadcasts
+
+    USER_ACCOUNT ||--o{ AUDIT_LOG_ENTRY : performs
+    OPERATION ||--o{ AUDIT_LOG_ENTRY : categorizes
+    DATA_IMPORT_JOB ||--o{ AUDIT_LOG_ENTRY : logged_for
+    REPORT_REQUEST ||--o{ AUDIT_LOG_ENTRY : logged_for
+    REPORT_EXPORT ||--o{ AUDIT_LOG_ENTRY : logged_for
+    GRADE ||--o{ AUDIT_LOG_ENTRY : logged_for
+
+    USER_ACCOUNT ||--o{ ROLLBACK_OPERATION : triggers
+    RECOVERY_POINT ||--o{ ROLLBACK_OPERATION : target_of
+    BACKUP_JOB ||--o{ BACKUP_JOB_RECOVERY_POINT : creates_link
+    RECOVERY_POINT ||--o{ BACKUP_JOB_RECOVERY_POINT : linked_to
